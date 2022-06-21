@@ -1,0 +1,174 @@
+    <html>
+
+    <head>
+        <!-- Created by Saurabh Kumar  -->
+        
+        <!-- title of the page -->
+        <title>Saurabh's Todo App</title>
+
+    </head>
+
+    
+
+    <body>
+
+        <!-- heading of the project -->
+        <h1>To do List with Javascript</h1>
+
+        <!-- TextBox for Entering Task -->
+        <input id="todo_title" type="text"  ></input>
+
+        <!-- Datepicker for picking date  -->
+        <input id="date_picker" type="date" ></input>
+
+        <!-- Add Todo Button for adding your next task -->
+        <button onclick="addTodo();" >Add Todo</button>
+
+        <!-- Div for inflating/rendering all the Todo List -->
+        <div id="todo_div" style="margin-top: 12px"></div>
+
+
+        
+
+        <script>
+
+            //initializing the div from id and saving it in todo_div variable fro later use in the project
+            let todo_div = document.getElementById("todo_div");
+
+            //Define the variable todoAdrray which will store our all task in the form of objects
+            let todosArray;
+
+            // This will retrivbe the data from local storage and from JSON we are converting a stored stringyfied array in the form of array
+            let getItems = JSON.parse(localStorage.getItem("todos"));
+
+
+            //condition to check is array available in local storage or not
+            if(Array.isArray(getItems)){
+
+                // if it is availabe then we are setting the the todosArray variable with the array stored in the local storage
+                todosArray=getItems;
+
+                // If there is no array available in the local storage the we simply setting dummy data in todo_div contatiner  
+            }else{
+
+                //array objacts
+
+            todosArray = [{
+                    title:"Get groceries",
+                    date: "02-04-2021",
+                    id: "id1"
+           },
+           {
+                    title:"Car Wash",
+                    date: "02-01-2021",
+                    id: "id2"
+           },
+           {
+                    title:"Make Dinner",
+                    date: "02-03-2022",
+                    id: "id3"
+           }];
+
+
+            }
+
+            /*Calling initial render funtion which loop through each object and create a new div container and setting up 
+              in todo_div*/  
+           render();
+
+            
+
+           /* This is the function for adding todo in the array , basically we are pushing object in array and also saving it
+           in local storage, also we are rendering it after data change by first clearing the todo_div*/
+
+
+            function addTodo(){
+                let editText = document.getElementById("todo_title");
+                let title = editText.value;
+                let date_picker = document.getElementById("date_picker");
+                let date = date_picker.value
+                let id = new Date().getTime();  
+               todosArray.push({
+                title: title,
+                date:date,
+                id: ""+id
+               });
+               saveTodo();
+               render();
+            }
+
+            
+            /* This render function first clear the todo_div and then loop through each todoArray object and then we are retriving 
+            the object info and through sting concantination we are adding it which is taskame and date and also apending the element
+            div with delete buttion and after all this process we are appending the todo_div each time*/
+
+            function render(){
+                clearList();
+
+                todosArray.forEach(function(todosArray) {
+                let element = document.createElement("div");
+                element.innerHTML = todosArray.title+" "+todosArray.date;
+                let deleteBtn = document.createElement("button");
+                deleteBtn.innerText="delete";
+                deleteBtn.style = "margin-left: 12px"
+                deleteBtn.id=todosArray.id;
+                deleteBtn.onclick = deleteTodo;
+                element.appendChild(deleteBtn);
+                todo_div.appendChild(element);
+                
+                
+            });
+
+            }
+
+            // funtion for clearing todo_div
+
+            function clearList(){
+                todo_div.innerHTML="";
+            }
+
+            /*this function delete the todo list : Its working is simple, When a user click on delete button we are getting the
+            target id which is basically button id : It is possible by inbuilt event funtion in javascript, which records the all
+            events when user intract with UI then we are comparing the the id which present in array and if its present then we
+            simple filter it by arrays filter function bascially we are returning boolean value which tells us what action needs 
+            to be performed and once the id matches we just filter it and then again we call the render fucntion which repeats the same
+            process i.e clearing, rendering filtered TodoList /updated TodoList and the last process we save the filtered array*/
+            function deleteTodo(event){
+
+                const buttonId = event.target;
+                const idToDelete= buttonId.id;
+
+              todosArray=  todosArray.filter(function(todosArray){
+
+                    if(todosArray.id===idToDelete){
+                        return false;
+                    }else{
+                        return true;
+
+                
+                    }
+
+                });
+
+                saveTodo();
+
+                render();
+
+            }
+
+
+            //Saving function to perform saving action in local storage
+            function saveTodo(){
+                localStorage.setItem("todos",JSON.stringify(todosArray));
+            }
+
+
+
+
+
+        </script>
+
+
+    </body>
+
+    </html>
